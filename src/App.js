@@ -1,25 +1,33 @@
 import Web3 from "web3";
 import ABI from "./ABI";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {useMetamask} from "use-metamask";
 import {createPortal} from "react-dom";
 import {Buy} from "./Buy";
-import {DisplayAccount, formatAccount} from "./utils";
+import {DisplayAccount} from "./utils";
+import useLocalStorage from "./useLocalStorage";
 
 export default function App() {
 	const [contract, setContract] = useState();
 	const {connect: metaConnect, metaState} = useMetamask();
-	const connect = async () => {
-		const res = await metaConnect(Web3);
-		console.log(res);
-	};
+	const [connection, setConnection] = useLocalStorage("connection.v1");
+	const connect = useCallback(async () => {
+		await metaConnect(Web3);
+		setConnection(Date.now());
+	}, [metaConnect, setConnection]);
 	const account = metaState.account[0];
 	const navPortalTarget = document.getElementById("tmba-portal-nav");
 	const navPortal = navPortalTarget
 		? createPortal(
-				<div style={{color: "white"}}>
+				<div style={{color: "white", fontSize: 16}}>
 					{!metaState.isConnected ? (
-						<button onClick={connect}>Connect Wallet</button>
+						<button
+							style={{fontSize: 14}}
+							className="btn btn--border theme-btn--primary-inverse"
+							onClick={connect}
+						>
+							Connect Wallet
+						</button>
 					) : (
 						<DisplayAccount account={account} />
 					)}
@@ -42,10 +50,10 @@ export default function App() {
 		: null;
 
 	useEffect(() => {
-		if (metaState.isAvailable) {
+		if (metaState.isAvailable && connection && !metaState.isConnected) {
 			connect();
 		}
-	}, [metaState.isAvailable]);
+	}, [metaState.isAvailable, connection]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	useEffect(() => {
 		async function run() {
@@ -56,7 +64,7 @@ export default function App() {
 			setContract(c);
 		}
 		run();
-	}, [metaState.isConnected]);
+	}, [metaState.isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<div>
