@@ -20,7 +20,7 @@ export default function App() {
 	const navPortal = navPortalTarget
 		? createPortal(
 				<div style={{color: "white", fontSize: 16}}>
-					{!metaState.isConnected ? (
+					{!metaState.isConnected && !connection ? (
 						<button
 							style={{fontSize: 14}}
 							className="btn btn--border theme-btn--primary-inverse"

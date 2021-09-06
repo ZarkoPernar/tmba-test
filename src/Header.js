@@ -3,7 +3,7 @@ import {useMetamask} from "use-metamask";
 import {DisplayAccount} from "./utils";
 
 export function Header() {
-	const {connect: metaConnect, metaState} = useMetamask();
+	const {metaState} = useMetamask();
 	const account = metaState.account[0];
 
 	return (

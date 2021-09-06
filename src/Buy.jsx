@@ -82,7 +82,7 @@ export function Buy({metaState, account, contract}) {
 	const mint = async () => {
 		try {
 			setProcessing(true);
-			const res = await contract.methods
+			await contract.methods
 				.mint(1)
 				.send({
 					type: "0x2",
