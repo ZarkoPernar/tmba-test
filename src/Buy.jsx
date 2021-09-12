@@ -52,7 +52,7 @@ export function Buy({metaState, account}) {
 	const countdown = useCountdown({
 		minutes: minutesToReleaseRounded,
 		seconds: secondsToRelease * 100,
-		format: "d'd' mm:ss",
+		format: "d'd' h:mm:ss",
 		onCompleted: () => console.log("onCompleted"),
 	});
 
