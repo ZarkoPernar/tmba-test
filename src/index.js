@@ -3,6 +3,8 @@ import ReactDOM from "react-dom";
 import {MetamaskStateProvider, store} from "use-metamask";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import "@reach/menu-button/styles.css";
+import "./App.css";
 
 const root = document.createElement("div");
 document.body.append(root);

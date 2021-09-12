@@ -1,6 +1,8 @@
 import {useState, useEffect} from "react";
 import Web3 from "web3";
 import useLocalStorage from "./useLocalStorage";
+import useCountdown from "@bradgarropy/use-countdown";
+import ABI from "./ABI";
 
 const getTokens = ({account}) => {
 	const url = new URL("https://api-rinkeby.etherscan.io/api");
@@ -35,7 +37,49 @@ const image = (
 	</div>
 );
 
-export function Buy({metaState, account, contract}) {
+const releaseDate = new Date("2021-09-16T12:00:00.000Z");
+const now = new Date();
+const minutesToRelease = (releaseDate - now) / 60000;
+const minutesToReleaseRounded = Math.round(minutesToRelease);
+const secondsToRelease = minutesToRelease - minutesToReleaseRounded;
+
+function CountDown({countdown}) {
+	return <h2 style={{textAlign: "center"}}>{countdown.formatted}</h2>;
+}
+
+export function Buy({metaState, account}) {
+	const [contract, setContract] = useState();
+	const countdown = useCountdown({
+		minutes: minutesToReleaseRounded,
+		seconds: secondsToRelease * 100,
+		format: "d'd' mm:ss",
+		onCompleted: () => console.log("onCompleted"),
+	});
+
+	useEffect(() => {
+		async function run() {
+			if (!metaState.isConnected) return;
+			const contractAddress =
+				"0x27eBa6Ad91fFA42661dC6A20c094A7753FfF604C";
+
+			const c = new metaState.web3.eth.Contract(ABI, contractAddress);
+			setContract(c);
+		}
+		run();
+	}, [metaState.isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	if (!contract) return <CountDown countdown={countdown} />;
+
+	if (!(countdown.minutes === 0 && countdown.seconds === 0)) {
+		return <CountDown countdown={countdown} />;
+	}
+
+	return (
+		<BuyInner contract={contract} account={account} metaState={metaState} />
+	);
+}
+
+export function BuyInner({metaState, account, contract}) {
 	const [totalSupply, setTotalSupply] = useState();
 	const [balance, setBalance] = useState(0);
 	const [processing, setProcessing] = useState(false);
@@ -76,8 +120,6 @@ export function Buy({metaState, account, contract}) {
 		}
 		run();
 	}, [contract.methods]);
-
-	// const tokens = new Array(balance).fill(1).map((_, index) => ({id: index}));
 
 	const mint = async () => {
 		try {
@@ -124,7 +166,7 @@ export function Buy({metaState, account, contract}) {
 			) : null}
 
 			{totalSupply ? (
-				<p style={{textAlign: "center"}}>
+				<p style={{textAlign: "center", textTransform: "lowercase"}}>
 					<strong>{1000 - totalSupply} / 1000</strong> editions
 					remaining
 				</p>

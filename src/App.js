@@ -1,14 +1,48 @@
 import Web3 from "web3";
-import ABI from "./ABI";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect} from "react";
 import {useMetamask} from "use-metamask";
 import {createPortal} from "react-dom";
 import {Buy} from "./Buy";
 import {DisplayAccount} from "./utils";
 import useLocalStorage from "./useLocalStorage";
+import {Menu, MenuList, MenuButton, MenuItem} from "@reach/menu-button";
+
+export function Account({account}) {
+	return account ? (
+		<div style={{display: "flex", position: "relative"}}>
+			<button
+				style={{
+					borderTopRightRadius: 0,
+					borderBottomRightRadius: 0,
+					border: 0,
+				}}
+				className="btn btn--border theme-btn--primary-inverse"
+			>
+				Your Token
+			</button>
+			<Menu>
+				<MenuButton
+					className="btn btn--border theme-btn--primary-inverse"
+					style={{
+						marginLeft: 1,
+						borderTopLeftRadius: 0,
+						borderBottomLeftRadius: 0,
+						border: 0,
+					}}
+				>
+					<span aria-hidden>▾</span>
+				</MenuButton>
+				<MenuList portal={true}>
+					<MenuItem>
+						<DisplayAccount account={account} />
+					</MenuItem>
+				</MenuList>
+			</Menu>
+		</div>
+	) : null;
+}
 
 export default function App() {
-	const [contract, setContract] = useState();
 	const {connect: metaConnect, metaState} = useMetamask();
 	const [connection, setConnection] = useLocalStorage("connection.v1");
 	const connect = useCallback(async () => {
@@ -29,7 +63,7 @@ export default function App() {
 							Connect Wallet
 						</button>
 					) : (
-						<DisplayAccount account={account} />
+						<Account account={account} />
 					)}
 				</div>,
 				navPortalTarget,
@@ -38,12 +72,8 @@ export default function App() {
 	const buyPortalTarget = document.getElementById("tmba-portal-buy");
 	const buyPortal = buyPortalTarget
 		? createPortal(
-				contract && metaState.isConnected && account ? (
-					<Buy
-						contract={contract}
-						metaState={metaState}
-						account={account}
-					/>
+				metaState.isConnected && account ? (
+					<Buy metaState={metaState} account={account} />
 				) : null,
 				buyPortalTarget,
 		  )
@@ -54,18 +84,6 @@ export default function App() {
 			connect();
 		}
 	}, [metaState.isAvailable, connection]); // eslint-disable-line react-hooks/exhaustive-deps
-
-	useEffect(() => {
-		async function run() {
-			if (!metaState.isConnected) return;
-			const contractAddress =
-				"0x27eBa6Ad91fFA42661dC6A20c094A7753FfF604C";
-
-			const c = new metaState.web3.eth.Contract(ABI, contractAddress);
-			setContract(c);
-		}
-		run();
-	}, [metaState.isConnected]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<div>
