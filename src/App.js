@@ -59,7 +59,8 @@ export default function App() {
 		async function run() {
 			if (!metaState.isConnected) return;
 			const contractAddress =
-				"0x2ea648b73209817f48c3bb6bc8f28122c2aa27bd";
+				"0x27eBa6Ad91fFA42661dC6A20c094A7753FfF604C";
+
 			const c = new metaState.web3.eth.Contract(ABI, contractAddress);
 			setContract(c);
 		}

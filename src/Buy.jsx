@@ -8,7 +8,7 @@ const getTokens = ({account}) => {
 	const arr = [
 		["module", "account"],
 		["action", "tokennfttx"],
-		["contractaddress", "0x2ea648b73209817f48c3bb6bc8f28122c2aa27bd"],
+		["contractaddress", "0x27eBa6Ad91fFA42661dC6A20c094A7753FfF604C"],
 		["address", account],
 		["page", "1"],
 		["offset", "100"],
@@ -86,9 +86,8 @@ export function Buy({metaState, account, contract}) {
 				.mint(1)
 				.send({
 					type: "0x2",
-					value: Web3.utils.toWei("0.09", "ether"),
+					value: Web3.utils.toWei("0.05", "ether"),
 					from: account,
-					// gasLimit:
 				})
 				.once("transactionHash", (hash) => {
 					setTransactionHash(hash);
@@ -164,7 +163,7 @@ export function Buy({metaState, account, contract}) {
 										rel="noopener noreferrer"
 										target="_blank"
 										className="list-section-button sqs-block-button-element--medium"
-										href={`https://testnets.opensea.io/assets/0x2ea648b73209817f48c3bb6bc8f28122c2aa27bd/${token.tokenID}`}
+										href={`https://testnets.opensea.io/assets/0x27eBa6Ad91fFA42661dC6A20c094A7753FfF604C/${token.tokenID}`}
 									>
 										View on opensea.io
 									</a>
